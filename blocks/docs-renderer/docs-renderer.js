@@ -152,8 +152,17 @@ export default async function decorate(block) {
   block.appendChild(wrapper);
 
   try {
+    const { hostname } = window.location;
+    const parts = hostname.split('--');
+    const owner = parts.length >= 3 ? parts[2].replace('.aem.live', '').replace('.aem.page', '').replace('.hlx.live', '').replace('.hlx.page', '') : '';
+    const repo = parts.length >= 2 ? parts[1] : '';
+    const branch = parts.length >= 1 ? parts[0] : 'main';
+    const rawUrl = owner && repo
+      ? `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/docs/${slug}.md`
+      : `${window.hlx.codeBasePath}/docs/${slug}.md`;
+
     const [resp, Prism] = await Promise.all([
-      fetch(`${window.hlx.codeBasePath}/docs/${slug}.md`),
+      fetch(rawUrl),
       loadPrism(),
     ]);
 
