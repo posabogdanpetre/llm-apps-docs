@@ -166,7 +166,7 @@ header nav .nav-brand img {
   height: auto;
 }
 
-/* sections */
+/* sections — works with both <ul>/<li> AND <p> structures */
 header nav .nav-sections {
   grid-area: sections;
   flex: 1 1 auto;
@@ -183,26 +183,11 @@ header nav[aria-expanded='true'] .nav-sections {
 header nav .nav-sections ul {
   list-style: none;
   padding-left: 0;
-  font-size: 14px;
   margin: 0;
 }
 
-header nav .nav-sections ul > li {
-  font-weight: 500;
-}
-
-header nav .nav-sections ul > li > ul {
-  margin-top: 0;
-}
-
-header nav .nav-sections ul > li > ul > li {
-  font-weight: 400;
-}
-
-/* force all p tags inside nav list items to be inline */
 header nav .nav-sections li p {
   margin: 0;
-  line-height: 1;
 }
 
 @media (width >= 900px) {
@@ -217,63 +202,52 @@ header nav .nav-sections li p {
     align-self: unset;
   }
 
+  /* paragraph-based nav: make the wrapper flex so <p> tags sit in a row */
+  header nav .nav-sections .default-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* list-based nav */
   header nav .nav-sections ul {
     display: flex;
     align-items: center;
     gap: 2px;
-    margin: 0;
   }
 
-  header nav .nav-sections li {
-    list-style: none;
-  }
-
-  header nav .nav-sections li a {
+  /* style all nav links the same regardless of parent structure */
+  header nav .nav-sections a {
     display: inline-block;
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 14px;
     font-weight: 500;
     color: var(--dark-color);
-    transition: background-color 0.15s ease, color 0.15s ease;
     white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
 
-  header nav .nav-sections li a:hover {
+  header nav .nav-sections a:hover {
     background-color: #f3f4f6;
     color: var(--text-color);
   }
 
-  header nav .nav-sections li a.active {
+  header nav .nav-sections a.active {
     background-color: #f3f4f6;
     color: var(--text-color);
     font-weight: 600;
   }
 
-  /* dropdowns */
+  /* dropdowns (for list-based nav with nested ul) */
   header nav .nav-sections .nav-drop {
     position: relative;
     padding-right: 16px;
     cursor: pointer;
   }
 
-  header nav .nav-sections .nav-drop::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 0.5em;
-    right: 2px;
-    transform: rotate(135deg);
-    width: 5px;
-    height: 5px;
-    border: 1.5px solid currentcolor;
-    border-radius: 0 1px 0 0;
-    border-width: 1.5px 1.5px 0 0;
-  }
-
   header nav .nav-sections .default-content-wrapper > ul > li > ul {
     display: none;
-    position: relative;
   }
 
   header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul {
