@@ -1,0 +1,346 @@
+/* ── Layout ─────────────────────────────────────────────────── */
+
+.docs-renderer {
+  max-width: 100%;
+  padding: 0;
+}
+
+.docs-layout {
+  display: flex;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.docs-content {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.7;
+}
+
+/* ── Loading state ──────────────────────────────────────────── */
+
+.docs-loading {
+  padding: 3rem 0;
+  text-align: center;
+  color: var(--dark-color);
+  font-size: var(--body-font-size-m);
+}
+
+/* ── Typography ─────────────────────────────────────────────── */
+
+.docs-content h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.docs-content h2 {
+  font-size: 1.6rem;
+  margin-top: 2.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.4rem;
+}
+
+.docs-content h3 {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+}
+
+.docs-content h4 {
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+}
+
+.docs-content > p:first-of-type {
+  font-size: 1.15rem;
+  color: var(--dark-color);
+}
+
+.docs-content hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 2.5rem 0;
+}
+
+/* ── Inline code ────────────────────────────────────────────── */
+
+.docs-content code:not(pre code) {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.88em;
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+  word-break: break-word;
+}
+
+/* ── Code blocks ────────────────────────────────────────────── */
+
+.docs-content pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 8px;
+  padding: 1.2rem 1.4rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  position: relative;
+  margin: 1.2rem 0;
+  border: 1px solid #313244;
+}
+
+.docs-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+  color: inherit;
+}
+
+/* ── Prism token colors (Catppuccin Mocha) ──────────────────── */
+
+.docs-content pre .token.comment,
+.docs-content pre .token.prolog,
+.docs-content pre .token.doctype,
+.docs-content pre .token.cdata {
+  color: #6c7086;
+}
+
+.docs-content pre .token.punctuation {
+  color: #9399b2;
+}
+
+.docs-content pre .token.property,
+.docs-content pre .token.tag,
+.docs-content pre .token.boolean,
+.docs-content pre .token.number,
+.docs-content pre .token.constant,
+.docs-content pre .token.symbol {
+  color: #fab387;
+}
+
+.docs-content pre .token.selector,
+.docs-content pre .token.attr-name,
+.docs-content pre .token.string,
+.docs-content pre .token.char,
+.docs-content pre .token.builtin {
+  color: #a6e3a1;
+}
+
+.docs-content pre .token.operator,
+.docs-content pre .token.entity,
+.docs-content pre .token.url {
+  color: #89dceb;
+}
+
+.docs-content pre .token.atrule,
+.docs-content pre .token.attr-value,
+.docs-content pre .token.keyword {
+  color: #cba6f7;
+}
+
+.docs-content pre .token.function,
+.docs-content pre .token.class-name {
+  color: #89b4fa;
+}
+
+.docs-content pre .token.regex,
+.docs-content pre .token.important,
+.docs-content pre .token.variable {
+  color: #f9e2af;
+}
+
+/* ── Copy button ────────────────────────────────────────────── */
+
+.docs-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #45475a;
+  color: #cdd6f4;
+  border: 1px solid #585b70;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+  font-family: var(--body-font-family);
+  z-index: 1;
+}
+
+pre:hover .docs-copy-btn {
+  opacity: 1;
+}
+
+.docs-copy-btn:hover {
+  background: #585b70;
+}
+
+.docs-copy-btn.copied {
+  background: #a6e3a1;
+  color: #1e1e2e;
+  border-color: #a6e3a1;
+}
+
+/* ── Heading anchors ────────────────────────────────────────── */
+
+.docs-anchor {
+  opacity: 0;
+  margin-left: 0.4em;
+  color: var(--link-color);
+  text-decoration: none;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+h1:hover .docs-anchor,
+h2:hover .docs-anchor,
+h3:hover .docs-anchor,
+h4:hover .docs-anchor {
+  opacity: 1;
+}
+
+/* ── Tables ─────────────────────────────────────────────────── */
+
+.docs-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.docs-content th,
+.docs-content td {
+  padding: 0.6rem 1rem;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.docs-content th {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.docs-content tr:nth-child(even) {
+  background: #fafbfc;
+}
+
+/* ── Blockquotes ────────────────────────────────────────────── */
+
+.docs-content blockquote {
+  border-left: 4px solid var(--link-color);
+  margin: 1.2rem 0;
+  padding: 0.8rem 1.2rem;
+  background: #f0f4ff;
+  border-radius: 0 6px 6px 0;
+  color: #374151;
+}
+
+.docs-content blockquote p {
+  margin: 0;
+}
+
+/* ── Lists ──────────────────────────────────────────────────── */
+
+.docs-content ul,
+.docs-content ol {
+  padding-left: 1.5rem;
+}
+
+.docs-content li {
+  margin-bottom: 0.3rem;
+}
+
+/* ── Floating TOC ───────────────────────────────────────────── */
+
+.docs-toc {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: calc(var(--nav-height) + 1rem);
+  align-self: flex-start;
+  max-height: calc(100vh - var(--nav-height) - 2rem);
+  overflow-y: auto;
+  padding-left: 1rem;
+  border-left: 1px solid #e5e7eb;
+}
+
+.docs-toc-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dark-color);
+  margin-bottom: 0.8rem;
+}
+
+.docs-toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.docs-toc li {
+  margin-bottom: 0.2rem;
+}
+
+.docs-toc li.docs-toc-h3 {
+  padding-left: 0.8rem;
+}
+
+.docs-toc a {
+  display: block;
+  font-size: 0.8rem;
+  padding: 0.2rem 0;
+  color: var(--dark-color);
+  text-decoration: none;
+  transition: color 0.15s;
+  line-height: 1.4;
+}
+
+.docs-toc a:hover {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.docs-toc a.active {
+  color: var(--link-color);
+  font-weight: 600;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+
+@media (width < 1024px) {
+  .docs-toc {
+    display: none;
+  }
+
+  .docs-layout {
+    display: block;
+  }
+}
+
+@media (width < 600px) {
+  .docs-content pre {
+    font-size: 0.8rem;
+    padding: 1rem;
+    border-radius: 6px;
+  }
+
+  .docs-content table {
+    font-size: 0.8rem;
+  }
+
+  .docs-content th,
+  .docs-content td {
+    padding: 0.4rem 0.6rem;
+  }
+}

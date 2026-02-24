@@ -142,6 +142,8 @@ pre {
   white-space: pre;
 }
 
+/* docs-renderer overrides the generic pre styles via block CSS specificity */
+
 main > div {
   margin: 40px 16px;
 }
@@ -322,4 +324,19 @@ main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+}
+
+/* docs pages: wider content area for the renderer block */
+main > .section > .docs-renderer-wrapper {
+  max-width: 1440px;
+}
+
+main:has(.docs-renderer) > .section {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+main:has(.docs-renderer) > .section > div {
+  max-width: 1440px;
+  padding: 0 2rem;
 }
