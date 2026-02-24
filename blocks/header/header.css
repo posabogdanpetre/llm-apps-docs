@@ -1,6 +1,5 @@
 /* header and nav layout */
 header .nav-wrapper {
-  background-color: var(--background-color);
   width: 100%;
   z-index: 2;
   position: sticky;
@@ -35,13 +34,8 @@ header nav[aria-expanded='true'] {
 }
 
 @media (width >= 900px) {
-  header .nav-wrapper {
-    position: sticky;
-  }
-
   header nav {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
     gap: 0;
     max-width: 1440px;
@@ -190,6 +184,7 @@ header nav .nav-sections ul {
   list-style: none;
   padding-left: 0;
   font-size: 14px;
+  margin: 0;
 }
 
 header nav .nav-sections ul > li {
@@ -204,9 +199,16 @@ header nav .nav-sections ul > li > ul > li {
   font-weight: 400;
 }
 
+/* force all p tags inside nav list items to be inline */
+header nav .nav-sections li p {
+  margin: 0;
+  line-height: 1;
+}
+
 @media (width >= 900px) {
   header nav .nav-sections {
-    display: block;
+    display: flex;
+    align-items: center;
     visibility: visible;
     white-space: nowrap;
   }
@@ -215,6 +217,40 @@ header nav .nav-sections ul > li > ul > li {
     align-self: unset;
   }
 
+  header nav .nav-sections ul {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+  }
+
+  header nav .nav-sections li {
+    list-style: none;
+  }
+
+  header nav .nav-sections li a {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark-color);
+    transition: background-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  header nav .nav-sections li a:hover {
+    background-color: #f3f4f6;
+    color: var(--text-color);
+  }
+
+  header nav .nav-sections li a.active {
+    background-color: #f3f4f6;
+    color: var(--text-color);
+    font-weight: 600;
+  }
+
+  /* dropdowns */
   header nav .nav-sections .nav-drop {
     position: relative;
     padding-right: 16px;
@@ -235,42 +271,6 @@ header nav .nav-sections ul > li > ul > li {
     border-width: 1.5px 1.5px 0 0;
   }
 
-  header nav .nav-sections .nav-drop[aria-expanded='true']::after {
-    top: unset;
-    bottom: 0.5em;
-    transform: rotate(315deg);
-  }
-
-  header nav .nav-sections ul {
-    display: flex;
-    gap: 4px;
-    margin: 0;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li {
-    flex: 0 1 auto;
-    position: relative;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > a {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 6px;
-    color: var(--dark-color);
-    transition: background-color 0.15s ease, color 0.15s ease;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > a:hover {
-    background-color: #f3f4f6;
-    color: var(--text-color);
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > a.active {
-    background-color: #f3f4f6;
-    color: var(--text-color);
-    font-weight: 600;
-  }
-
   header nav .nav-sections .default-content-wrapper > ul > li > ul {
     display: none;
     position: relative;
@@ -289,25 +289,16 @@ header nav .nav-sections ul > li > ul > li {
     box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
     white-space: initial;
   }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > ul::before {
-    display: none;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > ul > li {
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > ul > li:hover {
-    background-color: #f3f4f6;
-  }
 }
 
 /* tools */
 header nav .nav-tools {
   grid-area: tools;
   margin-left: auto;
+}
+
+header nav .nav-tools p {
+  margin: 0;
 }
 
 header nav .nav-tools a:any-link {
