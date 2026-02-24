@@ -67,8 +67,8 @@ Open `.env` and configure:
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
 | `AEM_COMPUTE_SERVICE` | Yes | AEM Edge Functions service ID | `pXXXXXX-eXXXXXX-llma-boilerplate` |
-| `CDN_API_OAUTH_CLIENT_ID` | Yes | OAuth client ID for token generation | `your-client-id` |
-| `CDN_API_OAUTH_CLIENT_SECRET` | Yes | OAuth client secret for token generation | `your-client-secret` |
+| `CDN_API_OAUTH_CLIENT_ID` | Yes | CDN API OAuth client ID ([how to obtain](#obtaining-oauth-credentials)) | `aem-cdn-api-client-xxxxxxxx` |
+| `CDN_API_OAUTH_CLIENT_SECRET` | Yes | CDN API OAuth client secret ([how to obtain](#obtaining-oauth-credentials)) | `p8e-xxxxxxxxxxxxxxxxxxxxxxxx` |
 
 The service ID follows the format `p<project>-e<env>-<service-name>`. The service name is extracted and used as the MCP endpoint path.
 
@@ -98,24 +98,6 @@ AEM_COMPUTE_SERVICE=p123456-e789012-my-chatgpt-app
 4. Choose **Server-to-Server Authentication**
 5. Select the **AEM Administrator Publish** product profile for your environment
 6. Copy the **Client ID** and **Client Secret** into your `.env` file
-
-### AEM Edge Functions CLI
-
-If you prefer to install the CLI manually instead of running `make setup`:
-
-```bash
-npm install -g @adobe/aio-cli
-aio plugins:install @adobe/aio-cli-plugin-aem-edge-functions
-```
-
-Before deploying to a remote environment, run the setup command:
-
-```bash
-cd llma-server
-aio aem edge-functions setup
-```
-
-This creates a local `.aio` config file that tells the CLI which AEM program/environment to target.
 
 ## Running the Application
 
@@ -284,13 +266,61 @@ npx @modelcontextprotocol/inspector
 # Connect to: http://localhost:7676/<service-name>
 ```
 
-### Production Deployment
+## Remote Deployment (AEM Edge Functions)
+
+Once your actions are working locally, deploy them to AEM Edge Functions for production use.
+
+### 1. Configure the AEM Edge Functions CLI
+
+From `llma-server`, run the setup command to select your AEM program and environment:
 
 ```bash
 cd llma-server
-make deploy       # Deploy to AEM Edge Functions
-make tail-logs    # View deployment logs
+aio aem edge-functions setup
 ```
+
+This creates a local `.aio` config file that tells the CLI which AEM program/environment to target. You only need to do this once per environment.
+
+For CI/CD pipelines, copy the `.aio` file contents into a secret and recreate it at runtime — otherwise `aio aem edge-functions deploy` won't know which environment to target.
+
+### 2. Set Environment Variables
+
+Make sure your `.env` file has the correct values for the target environment:
+
+```bash
+AEM_COMPUTE_SERVICE=pXXXXXX-eXXXXXX-your-app-name
+CDN_API_OAUTH_CLIENT_ID=aem-cdn-api-client-xxxxxxxx
+CDN_API_OAUTH_CLIENT_SECRET=p8e-xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### 3. Deploy
+
+```bash
+cd llma-server
+make deploy
+```
+
+This will:
+
+- Generate a fresh OAuth token from your credentials
+- Build the WASM binary with your environment configuration baked in
+- Deploy to AEM Edge Functions
+
+### 4. Verify
+
+Check the deployment logs:
+
+```bash
+make tail-logs
+```
+
+Your MCP server is now live at:
+
+```
+https://publish-pXXXXXX-eXXXXXX.adobeaemcloud.com/<service-name>
+```
+
+You can connect to it from the UI using the **Managed LLMA Server (Remote)** card.
 
 ## HTTPS Certificate Setup
 
