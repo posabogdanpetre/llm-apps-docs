@@ -11,30 +11,30 @@ If the spec evolves faster than the SDK, low-level `request()` and `notify()` me
 ## Quick Start
 
 ```js
-import { LLMAppsSDK } from './scripts/llmapps-sdk.js';
+import { LLMAppsSDK } from './scripts/llmapps-myApp.js';
 
-const bridge = new LLMAppsSDK({
+const myApp = new LLMAppsSDK({
   appInfo: { name: 'MyWidget', version: '1.0.0' },
 });
-await bridge.connect();
+await myApp.connect();
 
 // Host context (standard — works everywhere)
-console.log(bridge.hostContext.theme);   // 'dark'
-console.log(bridge.hostContext.locale);  // 'en-US'
+console.log(myApp.hostContext.theme);   // 'dark'
+console.log(myApp.hostContext.locale);  // 'en-US'
 
-const { structuredContent } = await bridge.toolResult;
+const { structuredContent } = await myApp.toolResult;
 // structuredContent has your data — render it
 ```
 
 Or use the factory:
 
 ```js
-import { createBridge } from './scripts/llmapps-sdk.js';
+import { createBridge } from './scripts/llmapps-myApp.js';
 
 const bridge = await createBridge({
   appInfo: { name: 'MyWidget', version: '1.0.0' },
 });
-const { structuredContent } = await bridge.toolResult;
+const { structuredContent } = await myApp.toolResult;
 ```
 
 ---
@@ -59,7 +59,7 @@ Creates a bridge instance ready to connect. `appInfo` is **required** — every 
 | `experimental` | `object` | Reserved for future features |
 
 ```js
-const bridge = new LLMAppsSDK({
+const myApp = new LLMAppsSDK({
   appInfo: { name: 'ProductShowcase', version: '1.0.0' },
   appCapabilities: {
     availableDisplayModes: ['inline', 'fullscreen'],
@@ -75,21 +75,21 @@ These work in **every** LLM Apps-compatible host (ChatGPT, Claude, etc.).
 
 ### Lifecycle
 
-#### `bridge.connect()` → `Promise<LLMAppsSDK>`
+#### `myApp.connect()` → `Promise<LLMAppsSDK>`
 
 Performs the `ui/initialize` handshake. Parses the `McpUiInitializeResult` and populates `hostContext`, `hostCapabilities`, and `hostInfo`. Safe to call when not in an iframe (becomes a no-op).
 
 ```js
-await bridge.connect();
+await myApp.connect();
 
-console.log(bridge.isConnected);          // true
-console.log(bridge.host);                 // 'chatgpt' | 'claude' | 'unknown'
-console.log(bridge.hostContext.theme);    // 'dark'
-console.log(bridge.hostCapabilities);     // { openLinks: true, ... }
-console.log(bridge.hostInfo);             // { name: 'chatgpt', version: '...' }
+console.log(myApp.isConnected);          // true
+console.log(myApp.host);                 // 'chatgpt' | 'claude' | 'unknown'
+console.log(myApp.hostContext.theme);    // 'dark'
+console.log(myApp.hostCapabilities);     // { openLinks: true, ... }
+console.log(myApp.hostInfo);             // { name: 'chatgpt', version: '...' }
 ```
 
-#### `bridge.destroy()`
+#### `myApp.destroy()`
 
 Remove listeners, reject pending requests, unsubscribe all context observers, and clean up. Also triggered automatically when the host sends `ui/resource-teardown`.
 
@@ -97,15 +97,15 @@ Remove listeners, reject pending requests, unsubscribe all context observers, an
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `bridge.isEmbedded` | `boolean` | `true` if running inside an iframe |
-| `bridge.isConnected` | `boolean` | `true` after successful handshake |
-| `bridge.host` | `string \| null` | Detected host: `'chatgpt'`, `'claude'`, etc. Prefers `hostInfo.name` from the handshake, falls back to environment sniffing |
+| `myApp.isEmbedded` | `boolean` | `true` if running inside an iframe |
+| `myApp.isConnected` | `boolean` | `true` after successful handshake |
+| `myApp.host` | `string \| null` | Detected host: `'chatgpt'`, `'claude'`, etc. Prefers `hostInfo.name` from the handshake, falls back to environment sniffing |
 
 ### Host Context
 
 After `connect()`, the host's response is exposed through three getters:
 
-#### `bridge.hostContext` → `object`
+#### `myApp.hostContext` → `object`
 
 Full context from the host. Updated live when `ui/notifications/host-context-changed` arrives.
 
@@ -125,166 +125,166 @@ Full context from the host. Updated live when `ui/notifications/host-context-cha
 | `toolInfo` | `object` | Tool invocation context |
 
 ```js
-console.log(bridge.hostContext.theme);           // 'dark'
-console.log(bridge.hostContext.locale);          // 'en-US'
-console.log(bridge.hostContext.displayMode);     // 'inline'
-console.log(bridge.hostContext.safeAreaInsets);   // { top: 0, bottom: 0, ... }
+console.log(myApp.hostContext.theme);           // 'dark'
+console.log(myApp.hostContext.locale);          // 'en-US'
+console.log(myApp.hostContext.displayMode);     // 'inline'
+console.log(myApp.hostContext.safeAreaInsets);   // { top: 0, bottom: 0, ... }
 ```
 
-#### `bridge.hostCapabilities` → `object`
+#### `myApp.hostCapabilities` → `object`
 
 What the host supports. Use for feature detection before calling methods.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `openLinks` | `{} \| undefined` | Present if host supports `bridge.openLink()` |
+| `openLinks` | `{} \| undefined` | Present if host supports `myApp.openLink()` |
 | `serverTools` | `{ listChanged?: boolean } \| undefined` | Present if host can forward tool calls |
 | `serverResources` | `{ listChanged?: boolean } \| undefined` | Present if host supports resource requests |
-| `logging` | `{} \| undefined` | Present if host accepts `bridge.log()` messages |
+| `logging` | `{} \| undefined` | Present if host accepts `myApp.log()` messages |
 | `sandbox` | `{ permissions?, csp? } \| undefined` | Sandbox configuration applied by the host |
 
 ```js
-if (bridge.hostCapabilities.openLinks) {
-  bridge.openLink('https://example.com');
+if (myApp.hostCapabilities.openLinks) {
+  myApp.openLink('https://example.com');
 }
 ```
 
-#### `bridge.hostInfo` → `{ name?: string, version?: string }`
+#### `myApp.hostInfo` → `{ name?: string, version?: string }`
 
-The host's identity. Used internally to improve `bridge.host` detection.
+The host's identity. Used internally to improve `myApp.host` detection.
 
 ### Tool Data
 
-#### `bridge.toolResult` → `Promise<params>`
+#### `myApp.toolResult` → `Promise<params>`
 
 Resolves when the host sends `ui/notifications/tool-result`. **One-shot** — resolves once per widget lifecycle.
 
 ```js
-const result = await bridge.toolResult;
+const result = await myApp.toolResult;
 
 result.structuredContent  // → the data (visible to model + widget)
 result.content            // → text narration array
 result._meta              // → widget-only data (hidden from model)
 ```
 
-#### `bridge.toolInput` → `Promise<params>`
+#### `myApp.toolInput` → `Promise<params>`
 
 Resolves when the host sends `ui/notifications/tool-input` — the arguments the model passed to the tool. **One-shot**.
 
 ```js
-const input = await bridge.toolInput;
+const input = await myApp.toolInput;
 console.log(input); // e.g. { category: 'electronics' }
 ```
 
-#### `bridge.toolCancelled` → `Promise<{ reason? }>`
+#### `myApp.toolCancelled` → `Promise<{ reason? }>`
 
 Resolves if the host cancels the tool execution (`ui/notifications/tool-cancelled`). **One-shot**.
 
 ```js
-bridge.toolCancelled.then(({ reason }) => {
+myApp.toolCancelled.then(({ reason }) => {
   showMessage(`Tool cancelled: ${reason || 'unknown'}`);
 });
 ```
 
 ### Interaction Methods
 
-#### `bridge.callTool(name, args)` → `Promise<result>`
+#### `myApp.callTool(name, args)` → `Promise<result>`
 
 Call any tool from the widget UI.
 
 ```js
-const result = await bridge.callTool('getProducts', { category: 'outdoor' });
+const result = await myApp.callTool('getProducts', { category: 'outdoor' });
 console.log(result.structuredContent);
 ```
 
-#### `bridge.sendMessage(text)` → `Promise<result>`
+#### `myApp.sendMessage(text)` → `Promise<result>`
 
 Post a follow-up message in the conversation as the user. The message is **visible** in the chat and the model responds.
 
 ```js
-await bridge.sendMessage('Tell me more about this product.');
+await myApp.sendMessage('Tell me more about this product.');
 ```
 
-#### `bridge.updateModelContext(text)` → `Promise<result>`
+#### `myApp.updateModelContext(text)` → `Promise<result>`
 
 Silently tell the model what the user is doing inside the widget. **Nothing appears** in the chat, but the model remembers it for future responses.
 
 ```js
-await bridge.updateModelContext('User selected 3 items from the list.');
+await myApp.updateModelContext('User selected 3 items from the list.');
 ```
 
-#### `bridge.openLink(url)` → `Promise<result>`
+#### `myApp.openLink(url)` → `Promise<result>`
 
 Open an external link via the host. The host may show a confirmation dialog.
 
 ```js
 // Standard — works on any compliant host
-await bridge.openLink('https://example.com/product/123');
+await myApp.openLink('https://example.com/product/123');
 ```
 
-Use `bridge.hostCapabilities.openLinks` to feature-detect before calling.
+Use `myApp.hostCapabilities.openLinks` to feature-detect before calling.
 
-#### `bridge.requestDisplayMode(mode)` → `Promise<{ mode }>`
+#### `myApp.requestDisplayMode(mode)` → `Promise<{ mode }>`
 
 Request a display mode change. Returns the actual mode set by the host.
 
 ```js
 // Standard — works on any compliant host
-const { mode } = await bridge.requestDisplayMode('fullscreen');
+const { mode } = await myApp.requestDisplayMode('fullscreen');
 console.log(mode); // 'fullscreen' (or whatever the host actually set)
 ```
 
-#### `bridge.reportSize(width, height)`
+#### `myApp.reportSize(width, height)`
 
 Report the widget's current size to the host (fire-and-forget notification).
 
 ```js
-bridge.reportSize(document.body.scrollWidth, document.body.scrollHeight);
+myApp.reportSize(document.body.scrollWidth, document.body.scrollHeight);
 ```
 
-#### `bridge.autoResize(target?)` → `stop`
+#### `myApp.autoResize(target?)` → `stop`
 
 Start automatic size reporting via ResizeObserver. Observes the target element and sends `ui/notifications/size-changed` whenever its dimensions change (debounced to 150ms). Returns a function to stop observing.
 
 ```js
 // Observe document.body (default)
-const stop = bridge.autoResize();
+const stop = myApp.autoResize();
 
 // Observe a specific element
-const stop = bridge.autoResize(document.getElementById('app'));
+const stop = myApp.autoResize(document.getElementById('app'));
 
 // Later: stop observing
 stop();
 ```
 
-#### `bridge.readResource(uri)` → `Promise<result>`
+#### `myApp.readResource(uri)` → `Promise<result>`
 
-Read a resource from the MCP server (proxied through the host). Use `bridge.hostCapabilities.serverResources` to feature-detect.
+Read a resource from the MCP server (proxied through the host). Use `myApp.hostCapabilities.serverResources` to feature-detect.
 
 ```js
-const result = await bridge.readResource('ui://my-server/config');
+const result = await myApp.readResource('ui://my-server/config');
 console.log(result.contents);
 ```
 
-#### `bridge.log(level, message)`
+#### `myApp.log(level, message)`
 
-Send a log message to the host (fire-and-forget notification). Use `bridge.hostCapabilities.logging` to feature-detect.
+Send a log message to the host (fire-and-forget notification). Use `myApp.hostCapabilities.logging` to feature-detect.
 
 ```js
-bridge.log('info', 'Widget loaded successfully');
-bridge.log('error', 'Failed to fetch product data');
+myApp.log('info', 'Widget loaded successfully');
+myApp.log('error', 'Failed to fetch product data');
 ```
 
 ### Context Observation
 
-#### `bridge.onContextChange(callback)` → `unsubscribe`
+#### `myApp.onContextChange(callback)` → `unsubscribe`
 
 Register a callback for host context changes. Fires when the host sends `ui/notifications/host-context-changed` — for theme toggles, display mode changes, locale changes, container resizes, etc.
 
 The callback receives the merged (full) `hostContext` after the update. Returns an unsubscribe function.
 
 ```js
-const stop = bridge.onContextChange((ctx) => {
+const stop = myApp.onContextChange((ctx) => {
   document.body.dataset.theme = ctx.theme;
   if (ctx.displayMode === 'fullscreen') showExpandedLayout();
 });
@@ -293,12 +293,12 @@ const stop = bridge.onContextChange((ctx) => {
 stop();
 ```
 
-#### `bridge.onToolInputPartial(callback)` → `unsubscribe`
+#### `myApp.onToolInputPartial(callback)` → `unsubscribe`
 
 Register a callback for streaming tool input arguments. Fires on each `ui/notifications/tool-input-partial` notification sent by the host while the agent is still streaming. The callback receives the best-effort recovered arguments object. Returns an unsubscribe function.
 
 ```js
-const stop = bridge.onToolInputPartial((params) => {
+const stop = myApp.onToolInputPartial((params) => {
   // Show fields as they stream in
   if (params.arguments?.title) showTitle(params.arguments.title);
 });
@@ -306,22 +306,22 @@ const stop = bridge.onToolInputPartial((params) => {
 
 ### Style Helpers
 
-#### `bridge.applyHostStyles(target?)` 
+#### `myApp.applyHostStyles(target?)` 
 
 Inject host-provided CSS variables and fonts. Reads `hostContext.styles.variables` and sets each as a CSS custom property on `target`. Also injects font CSS and sets `color-scheme`.
 
 ```js
-await bridge.connect();
-bridge.applyHostStyles();                  // applies to <html>
-bridge.applyHostStyles(shadowRoot.host);   // applies to a web component
+await myApp.connect();
+myApp.applyHostStyles();                  // applies to <html>
+myApp.applyHostStyles(shadowRoot.host);   // applies to a web component
 ```
 
-#### `bridge.applyContainerDimensions(target?)`
+#### `myApp.applyContainerDimensions(target?)`
 
 Apply host-provided container dimensions as CSS. Handles fixed vs flexible sizing per the spec.
 
 ```js
-bridge.applyContainerDimensions();  // applies to <html>
+myApp.applyContainerDimensions();  // applies to <html>
 ```
 
 ### Low-level JSON-RPC
@@ -330,11 +330,11 @@ Escape hatch for forward-compatibility. If the spec adds a new method tomorrow, 
 
 ```js
 // Request — expects a response from the host (returns a Promise)
-const result = await bridge.request('ui/request-payment', { amount: 9.99 });
+const result = await myApp.request('ui/request-payment', { amount: 9.99 });
 console.log(result); // host's response
 
 // Notification — fire-and-forget (no response, no Promise)
-bridge.notify('ui/notifications/size-changed', { width: 400, height: 600 });
+myApp.notify('ui/notifications/size-changed', { width: 400, height: 600 });
 ```
 
 ---
@@ -343,46 +343,46 @@ bridge.notify('ui/notifications/size-changed', { width: 400, height: 600 });
 
 Vendor extensions expose host-specific capabilities that have **no standard equivalent**. They are auto-detected — just check if the namespace exists.
 
-### `bridge.chatgpt` → `ChatGPTExtensions | null`
+### `myApp.chatgpt` → `ChatGPTExtensions | null`
 
 Returns a ChatGPT extensions object when running inside ChatGPT (`window.openai` is present), or `null` otherwise.
 
-> **Note**: Theme, locale, display mode, link opening, and size reporting are now handled by the standard protocol (`bridge.hostContext`, `bridge.openLink()`, etc.). The `bridge.chatgpt` namespace only contains truly ChatGPT-specific APIs.
+> **Note**: Theme, locale, display mode, link opening, and size reporting are now handled by the standard protocol (`myApp.hostContext`, `myApp.openLink()`, etc.). The `myApp.chatgpt` namespace only contains truly ChatGPT-specific APIs.
 
 #### State persistence
 
 ```js
 // Read current state (restored by ChatGPT on re-render)
-const state = bridge.chatgpt.widgetState;
+const state = myApp.chatgpt.widgetState;
 
 // Save state (synchronous call, host persists async)
-bridge.chatgpt.setWidgetState({ selectedTab: 2, filters: ['outdoor'] });
+myApp.chatgpt.setWidgetState({ selectedTab: 2, filters: ['outdoor'] });
 ```
 
 #### File APIs
 
 ```js
 // Upload an image file
-const { fileId } = await bridge.chatgpt.uploadFile(file);
+const { fileId } = await myApp.chatgpt.uploadFile(file);
 
 // Get a temporary download URL
-const { downloadUrl } = await bridge.chatgpt.getFileDownloadUrl({ fileId });
+const { downloadUrl } = await myApp.chatgpt.getFileDownloadUrl({ fileId });
 ```
 
 #### UI Control (ChatGPT-only)
 
 ```js
 // Open a host modal (optionally targeting another template)
-await bridge.chatgpt.requestModal({ template: 'ui://widget/checkout.html' });
+await myApp.chatgpt.requestModal({ template: 'ui://widget/checkout.html' });
 
 // Close the widget
-bridge.chatgpt.requestClose();
+myApp.chatgpt.requestClose();
 
 // Instant Checkout (when enabled)
-await bridge.chatgpt.requestCheckout({ /* payload */ });
+await myApp.chatgpt.requestCheckout({ /* payload */ });
 
 // Set the "Open in App" URL for fullscreen mode
-bridge.chatgpt.setOpenInAppUrl({ href: 'https://myapp.com/dashboard' });
+myApp.chatgpt.setOpenInAppUrl({ href: 'https://myapp.com/dashboard' });
 ```
 
 #### Other properties
@@ -399,10 +399,10 @@ bridge.chatgpt.setOpenInAppUrl({ href: 'https://myapp.com/dashboard' });
 
 ```html
 <script type="module">
-  import { createBridge } from 'https://main--eds-01--posabogdanpetre.aem.page/scripts/llmapps-sdk.js';
+  import { createBridge } from 'https://main--eds-01--posabogdanpetre.aem.page/scripts/llmapps-myApp.js';
 
   const bridge = await createBridge({ appInfo: { name: 'MinimalWidget', version: '1.0.0' } });
-  const { structuredContent } = await bridge.toolResult;
+  const { structuredContent } = await myApp.toolResult;
 
   document.body.innerHTML = `<h1>${structuredContent.title}</h1>`;
 </script>
@@ -417,7 +417,7 @@ The `aem-embed` web component creates the bridge and passes it to your block. It
 export default async function decorate(block, bridge) {
   block.textContent = 'Loading...';
 
-  const result = await bridge.toolResult;
+  const result = await myApp.toolResult;
   const products = result.structuredContent.products;
 
   block.textContent = '';
@@ -437,14 +437,14 @@ const bridge = await createBridge({
 });
 
 // Initial theme from the standard handshake
-document.body.dataset.theme = bridge.hostContext.theme || 'light';
+document.body.dataset.theme = myApp.hostContext.theme || 'light';
 
 // React to theme changes (standard — works everywhere)
-bridge.onContextChange((ctx) => {
+myApp.onContextChange((ctx) => {
   document.body.dataset.theme = ctx.theme;
 });
 
-const { structuredContent } = await bridge.toolResult;
+const { structuredContent } = await myApp.toolResult;
 renderUI(structuredContent);
 ```
 
@@ -458,11 +458,11 @@ const bridge = await createBridge({
 
 // Standard — works on any compliant host
 expandBtn.addEventListener('click', () => {
-  bridge.requestDisplayMode('fullscreen');
+  myApp.requestDisplayMode('fullscreen');
 });
 
 backBtn.addEventListener('click', () => {
-  bridge.requestDisplayMode('inline');
+  myApp.requestDisplayMode('inline');
 });
 ```
 
@@ -475,9 +475,9 @@ const bridge = await createBridge({
 
 // Standard — host may show confirmation
 link.addEventListener('click', (e) => {
-  if (bridge.isConnected) {
+  if (myApp.isConnected) {
     e.preventDefault();
-    bridge.openLink('https://example.com/product/123');
+    myApp.openLink('https://example.com/product/123');
   }
   // else: default <a> behavior
 });
@@ -487,12 +487,12 @@ link.addEventListener('click', (e) => {
 
 ```js
 const bridge = await createBridge({ appInfo: { name: 'Demo', version: '1.0.0' } });
-const { structuredContent } = await bridge.toolResult;
+const { structuredContent } = await myApp.toolResult;
 
 const btn = document.createElement('button');
 btn.textContent = 'Show only outdoor products';
 btn.addEventListener('click', async () => {
-  const filtered = await bridge.callTool('getProducts', { category: 'outdoor' });
+  const filtered = await myApp.callTool('getProducts', { category: 'outdoor' });
   renderCards(filtered.structuredContent.products);
 });
 document.body.appendChild(btn);
@@ -507,14 +507,14 @@ const bridge = await createBridge({
 });
 
 // Standard: go fullscreen
-await bridge.requestDisplayMode('fullscreen');
+await myApp.requestDisplayMode('fullscreen');
 
 // ChatGPT-only: file upload
-if (bridge.chatgpt) {
+if (myApp.chatgpt) {
   fileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    const { fileId } = await bridge.chatgpt.uploadFile(file);
-    await bridge.updateModelContext(`User uploaded image: ${fileId}`);
+    const { fileId } = await myApp.chatgpt.uploadFile(file);
+    await myApp.updateModelContext(`User uploaded image: ${fileId}`);
   });
 }
 ```
@@ -544,31 +544,31 @@ Every SDK method maps 1:1 to a protocol method:
 | `requestDisplayMode()` | `ui/request-display-mode` | Widget → Host | Request |
 | `reportSize()` / `autoResize()` | `ui/notifications/size-changed` | Widget → Host | Notification |
 
-Vendor extensions (`bridge.chatgpt.*`) use `window.openai` directly — they do **not** go through the JSON-RPC bridge.
+Vendor extensions (`myApp.chatgpt.*`) use `window.openai` directly — they do **not** go through the JSON-RPC myApp.
 
 ## Vendor Support Matrix
 
 | Capability | Standard | ChatGPT-only |
 |-----------|----------|--------------|
-| Tool result / input / cancelled | `bridge.toolResult` / `toolInput` / `toolCancelled` | -- |
-| Streaming tool input | `bridge.onToolInputPartial()` | -- |
-| Call tool / send message | `bridge.callTool()` / `sendMessage()` | -- |
-| Read resources | `bridge.readResource()` | -- |
-| Update model context | `bridge.updateModelContext()` | -- |
-| Logging | `bridge.log()` | -- |
-| Theme / locale / display mode | `bridge.hostContext.*` | -- |
-| Context changes | `bridge.onContextChange()` | -- |
-| Open external link | `bridge.openLink()` | -- |
-| Display mode switching | `bridge.requestDisplayMode()` | -- |
-| Size reporting | `bridge.reportSize()` / `autoResize()` | -- |
-| Host styles / fonts | `bridge.applyHostStyles()` | -- |
-| Container dimensions | `bridge.applyContainerDimensions()` | -- |
-| Widget state persistence | -- | `bridge.chatgpt.widgetState` |
-| File upload / download | -- | `bridge.chatgpt.uploadFile()` |
-| Host modals | -- | `bridge.chatgpt.requestModal()` |
-| Close widget | -- | `bridge.chatgpt.requestClose()` |
-| Checkout | -- | `bridge.chatgpt.requestCheckout()` |
-| "Open in App" URL | -- | `bridge.chatgpt.setOpenInAppUrl()` |
+| Tool result / input / cancelled | `myApp.toolResult` / `toolInput` / `toolCancelled` | -- |
+| Streaming tool input | `myApp.onToolInputPartial()` | -- |
+| Call tool / send message | `myApp.callTool()` / `sendMessage()` | -- |
+| Read resources | `myApp.readResource()` | -- |
+| Update model context | `myApp.updateModelContext()` | -- |
+| Logging | `myApp.log()` | -- |
+| Theme / locale / display mode | `myApp.hostContext.*` | -- |
+| Context changes | `myApp.onContextChange()` | -- |
+| Open external link | `myApp.openLink()` | -- |
+| Display mode switching | `myApp.requestDisplayMode()` | -- |
+| Size reporting | `myApp.reportSize()` / `autoResize()` | -- |
+| Host styles / fonts | `myApp.applyHostStyles()` | -- |
+| Container dimensions | `myApp.applyContainerDimensions()` | -- |
+| Widget state persistence | -- | `myApp.chatgpt.widgetState` |
+| File upload / download | -- | `myApp.chatgpt.uploadFile()` |
+| Host modals | -- | `myApp.chatgpt.requestModal()` |
+| Close widget | -- | `myApp.chatgpt.requestClose()` |
+| Checkout | -- | `myApp.chatgpt.requestCheckout()` |
+| "Open in App" URL | -- | `myApp.chatgpt.setOpenInAppUrl()` |
 
 ## API Surface
 
@@ -576,50 +576,50 @@ Summary of everything available on the bridge instance:
 
 ```
 // ── Standard Protocol (works everywhere) ──────────────────────
-bridge.connect()                         // ui/initialize handshake
-bridge.destroy()                         // cleanup
+myApp.connect()                         // ui/initialize handshake
+myApp.destroy()                         // cleanup
 
-bridge.hostContext                       // theme, locale, styles, displayMode, ...
-bridge.hostCapabilities                  // openLinks, serverTools, logging, ...
-bridge.hostInfo                          // { name, version }
+myApp.hostContext                       // theme, locale, styles, displayMode, ...
+myApp.hostCapabilities                  // openLinks, serverTools, logging, ...
+myApp.hostInfo                          // { name, version }
 
-bridge.toolResult                        // Promise → tool result data
-bridge.toolInput                         // Promise → tool input arguments
-bridge.toolCancelled                     // Promise → { reason }
+myApp.toolResult                        // Promise → tool result data
+myApp.toolInput                         // Promise → tool input arguments
+myApp.toolCancelled                     // Promise → { reason }
 
-bridge.callTool(name, args)              // tools/call
-bridge.readResource(uri)                 // resources/read
-bridge.log(level, message)              // notifications/message
-bridge.sendMessage(text)                 // ui/message
-bridge.updateModelContext(text)          // ui/update-model-context
-bridge.openLink(url)                     // ui/open-link
-bridge.requestDisplayMode(mode)          // ui/request-display-mode
-bridge.reportSize(width, height)         // ui/notifications/size-changed
-bridge.autoResize(target?)               // ResizeObserver → size-changed
-bridge.onContextChange(callback)         // ui/notifications/host-context-changed
-bridge.onToolInputPartial(callback)      // ui/notifications/tool-input-partial
+myApp.callTool(name, args)              // tools/call
+myApp.readResource(uri)                 // resources/read
+myApp.log(level, message)              // notifications/message
+myApp.sendMessage(text)                 // ui/message
+myApp.updateModelContext(text)          // ui/update-model-context
+myApp.openLink(url)                     // ui/open-link
+myApp.requestDisplayMode(mode)          // ui/request-display-mode
+myApp.reportSize(width, height)         // ui/notifications/size-changed
+myApp.autoResize(target?)               // ResizeObserver → size-changed
+myApp.onContextChange(callback)         // ui/notifications/host-context-changed
+myApp.onToolInputPartial(callback)      // ui/notifications/tool-input-partial
 
-bridge.applyHostStyles(target?)          // inject CSS variables + fonts
-bridge.applyContainerDimensions(target?) // apply host sizing CSS
+myApp.applyHostStyles(target?)          // inject CSS variables + fonts
+myApp.applyContainerDimensions(target?) // apply host sizing CSS
 
-bridge.isEmbedded                        // boolean
-bridge.isConnected                       // boolean
-bridge.host                              // 'chatgpt' | 'claude' | 'unknown'
+myApp.isEmbedded                        // boolean
+myApp.isConnected                       // boolean
+myApp.host                              // 'chatgpt' | 'claude' | 'unknown'
 
-bridge.request(method, params)           // low-level JSON-RPC request
-bridge.notify(method, params)            // low-level JSON-RPC notification
+myApp.request(method, params)           // low-level JSON-RPC request
+myApp.notify(method, params)            // low-level JSON-RPC notification
 
 // ── ChatGPT Vendor Extensions ─────────────────────────────────
-bridge.chatgpt                           // ChatGPTExtensions | null
-bridge.chatgpt.widgetState               // persisted UI state
-bridge.chatgpt.setWidgetState(state)     // save UI state
-bridge.chatgpt.uploadFile(file)          // file upload → { fileId }
-bridge.chatgpt.getFileDownloadUrl(opts)  // → { downloadUrl }
-bridge.chatgpt.requestModal(opts)        // host-controlled modal
-bridge.chatgpt.requestClose()            // close widget
-bridge.chatgpt.requestCheckout(opts)     // instant checkout
-bridge.chatgpt.setOpenInAppUrl(opts)     // "Open in App" URL
-bridge.chatgpt.view                      // view identifier
+myApp.chatgpt                           // ChatGPTExtensions | null
+myApp.chatgpt.widgetState               // persisted UI state
+myApp.chatgpt.setWidgetState(state)     // save UI state
+myApp.chatgpt.uploadFile(file)          // file upload → { fileId }
+myApp.chatgpt.getFileDownloadUrl(opts)  // → { downloadUrl }
+myApp.chatgpt.requestModal(opts)        // host-controlled modal
+myApp.chatgpt.requestClose()            // close widget
+myApp.chatgpt.requestCheckout(opts)     // instant checkout
+myApp.chatgpt.setOpenInAppUrl(opts)     // "Open in App" URL
+myApp.chatgpt.view                      // view identifier
 ```
 
 ## Why Use This SDK
@@ -628,10 +628,10 @@ Without the LLMApps SDK, every widget must manually implement the JSON-RPC 2.0 p
 
 **What the SDK gives you:**
 
-- **One-line handshake.** `await bridge.connect()` handles the full `ui/initialize` exchange and parses the host's response into `hostContext`, `hostCapabilities`, and `hostInfo` — ready to use immediately.
-- **Promise-based tool data.** `await bridge.toolResult` replaces manual `message` event listeners, JSON-RPC filtering, and method matching with a single await.
+- **One-line handshake.** `await myApp.connect()` handles the full `ui/initialize` exchange and parses the host's response into `hostContext`, `hostCapabilities`, and `hostInfo` — ready to use immediately.
+- **Promise-based tool data.** `await myApp.toolResult` replaces manual `message` event listeners, JSON-RPC filtering, and method matching with a single await.
 - **Cross-host portability.** Standard methods like `openLink()`, `requestDisplayMode()`, and `onContextChange()` work on any compliant host. No vendor-specific code needed for core functionality.
-- **Vendor isolation.** Host-specific APIs (ChatGPT's widget state, file upload, modals) are namespaced under `bridge.chatgpt` — cleanly separated from standard protocol, auto-detected, and `null` on other hosts. No runtime errors, no feature-detection boilerplate.
+- **Vendor isolation.** Host-specific APIs (ChatGPT's widget state, file upload, modals) are namespaced under `myApp.chatgpt` — cleanly separated from standard protocol, auto-detected, and `null` on other hosts. No runtime errors, no feature-detection boilerplate.
 - **Host style injection.** `applyHostStyles()` reads the host's CSS variables and fonts from the handshake and applies them in one call — your widget matches the host theme without custom CSS logic.
 
 ## Spec & References
