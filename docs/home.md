@@ -1,57 +1,74 @@
-# LLMApps Docs
+# LLM Apps
 
-Welcome to the LLMApps documentation — everything you need to build widgets that run inside LLM Apps hosts like ChatGPT, Claude, and any compliant client.
+A boilerplate for rapidly building ChatGPT applications with custom actions and interactive widgets, powered by the Model Context Protocol (MCP).
 
-## Getting Started
+## What is LLM Apps?
 
-LLMApps provides a lightweight, zero-dependency JavaScript SDK that wraps the LLM Apps protocol (JSON-RPC 2.0 over postMessage) into a simple Promise-based API.
+LLM Apps helps you create ChatGPT applications that can:
 
-```js
-import { LLMAppsSDK } from './scripts/llmapps-sdk.js';
+- Execute custom **actions** — search products, book appointments, fetch data
+- Display rich **widgets** — interactive cards, forms, product galleries
+- Connect to your own **data sources and APIs**
+- Deploy to **AEM Edge Functions** for production use
 
-const bridge = new LLMAppsSDK({
-  appInfo: { name: 'MyWidget', version: '1.0.0' },
-});
-await bridge.connect();
+## Key Concepts
 
-const toolData = await bridge.getToolData();
-```
+| Concept | Description |
+|---------|-------------|
+| **MCP** | Model Context Protocol — the standard protocol for AI assistants to interact with external tools |
+| **Actions** | Functions that ChatGPT can call (e.g., "search catalog", "get weather") |
+| **Widgets** | Visual components displayed in ChatGPT conversations (product cards, booking forms, carousels) |
+| **llma-server** | Your MCP server that handles ChatGPT requests and serves actions/widgets |
+| **llma-ui** | Web interface for creating, managing, and deploying actions |
 
-That's it — three lines to connect, one to receive data.
+## Components
+
+### llma-server — MCP Server
+
+Your ChatGPT action server with:
+
+- **Action System** — Create custom functions ChatGPT can call
+- **Widget System** — Build interactive UI components (EDS, Experience Fragments, Content Fragments)
+- **Input Validation** — Automatic validation of user inputs via Zod schemas
+- **Session Management** — Handles user sessions automatically
+- **AEP Integration** — Optional Adobe Experience Platform tracking
+- **Production Ready** — Deploy to AEM Edge Functions
+
+### llma-ui — Management Interface
+
+Visual tool for managing your actions:
+
+- **Action Wizard** — Step-by-step action creation with full validation
+- **Edit & Deploy** — Modify actions and deploy changes instantly
+- **Widget Builder** — Create interactive UI components
+- **Visual Flow Builder** — Design conversation flows
+- **Change Tracking** — Review all changes before deploying
+- **One-Click Deploy** — Deploy to local or production with real-time output
+
+## Technology Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Language | TypeScript (full type safety) |
+| MCP SDK | @modelcontextprotocol/sdk v1.20.2 |
+| Server Runtime | Fastly Compute@Edge (JavaScript/WASM) |
+| UI Framework | React 18 + Vite |
+| UI Library | Adobe React Spectrum |
+| Backend | Hono (lightweight & fast) |
+| Testing | Jest |
+
+## What You Can Build
+
+- **E-commerce** — Product search with cart widgets
+- **Booking** — Appointment scheduling with calendar display
+- **Data Visualization** — Interactive charts and dashboards
+- **Content Search** — Rich result cards with AEM content
+- **Forms** — Submission flows with confirmation widgets
+- **Carousels** — Dynamic Experience Fragment galleries
 
 ## Documentation
 
 | Guide | Description |
 |-------|-------------|
-| [JS SDK Reference](/js-sdk-reference) | Full API reference — constructor, lifecycle, tool data, interaction methods, context observation, and vendor extensions |
-
-## Key Features
-
-- **Zero dependencies** — no bundler required, works as a plain ES module
-- **Universal** — same API across ChatGPT, Claude, and any compliant host
-- **Promise-based** — async/await from connect to disconnect
-- **Auto-detection** — host-specific capabilities discovered automatically
-- **Forward-compatible** — low-level `request()` and `notify()` for any protocol method
-
-## Architecture
-
-LLMApps widgets run inside an iframe hosted by the LLM application. Communication flows through `postMessage` using JSON-RPC 2.0:
-
-```
-┌─────────────────────────────┐
-│  LLM Host (ChatGPT, etc.)  │
-│                             │
-│  ┌───────────────────────┐  │
-│  │   Widget (iframe)     │  │
-│  │                       │  │
-│  │   LLMAppsSDK          │  │
-│  │     ↕ postMessage     │  │
-│  └───────────────────────┘  │
-│         ↕ JSON-RPC 2.0     │
-│  Host Protocol Handler      │
-└─────────────────────────────┘
-```
-
-## Links
-
-- [GitHub Repository](https://github.com/posabogdanpetre/llm-apps-docs)
+| [Getting Started](/getting-started) | Prerequisites, installation, configuration, and first run |
+| [JS SDK Reference](/js-sdk-reference) | Full API reference for the LLMApps JavaScript SDK |
