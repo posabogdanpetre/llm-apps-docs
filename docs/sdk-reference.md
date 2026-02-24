@@ -11,9 +11,9 @@ If the spec evolves faster than the SDK, low-level `request()` and `notify()` me
 ## Quick Start
 
 ```js
-import { LLMAppsSDK } from './scripts/llmapps-sdk.js';
+import { LLMApp } from './scripts/llmapps-sdk.js';
 
-const app = new LLMAppsSDK({
+const app = new LLMApp({
   appInfo: { name: 'MyWidget', version: '1.0.0' },
 });
 await app.connect();
@@ -41,7 +41,7 @@ const { structuredContent } = await app.toolResult;
 
 ## Constructor
 
-### `new LLMAppsSDK(options)`
+### `new LLMApp(options)`
 
 Creates an instance ready to connect. `appInfo` is **required** — every widget must identify itself.
 
@@ -59,7 +59,7 @@ Creates an instance ready to connect. `appInfo` is **required** — every widget
 | `experimental` | `object` | Reserved for future features |
 
 ```js
-const app = new LLMAppsSDK({
+const app = new LLMApp({
   appInfo: { name: 'ProductShowcase', version: '1.0.0' },
   appCapabilities: {
     availableDisplayModes: ['inline', 'fullscreen'],
@@ -75,7 +75,7 @@ These work in **every** LLM Apps-compatible host (ChatGPT, Claude, etc.).
 
 ### Lifecycle
 
-#### `app.connect()` → `Promise<LLMAppsSDK>`
+#### `app.connect()` → `Promise<LLMApp>`
 
 Performs the `ui/initialize` handshake. Parses the `McpUiInitializeResult` and populates `hostContext`, `hostCapabilities`, and `hostInfo`. Safe to call when not in an iframe (becomes a no-op).
 
